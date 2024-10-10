@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -58,6 +60,19 @@ class _FlipCardState extends State<FlipCard> {
 
   @override
   Widget build(BuildContext context) {
+    Widget _transitionBuilder(Widget child, Animation<double> animation) {
+      final flip = Tween(begin: pi, end: 0).animate(animation);
+      return AnimatedBuilder(
+          animation: flip,
+          builder: (context, widget) {
+            return Transform(
+              transform: Matrix4.rotationY(flip.value.toDouble()),
+              alignment: Alignment.center,
+              child: child,
+            );
+          });
+    }
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -65,13 +80,18 @@ class _FlipCardState extends State<FlipCard> {
         });
       },
       child: AnimatedSwitcher(
+          transitionBuilder: _transitionBuilder,
           duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.bounceInOut,
+          switchOutCurve: Curves.bounceInOut,
           child: isFront
               ? const CardItem(
+                  key: ValueKey(true),
                   color: Colors.blue,
                   content: "Front",
                 )
               : const CardItem(
+                  key: ValueKey(false),
                   color: Colors.green,
                   content: "Back",
                 )),
@@ -92,6 +112,7 @@ class CardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: key,
       width: 200,
       height: 200,
       decoration:
