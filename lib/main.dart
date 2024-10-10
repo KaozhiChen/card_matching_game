@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:card_matching_game/MyCard.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -35,93 +34,29 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: FlipCard(),
-      ),
-    );
-  }
-}
-
-class FlipCard extends StatefulWidget {
-  const FlipCard({
-    super.key,
-  });
-
-  @override
-  State<FlipCard> createState() => _FlipCardState();
-}
-
-class _FlipCardState extends State<FlipCard> {
-  bool isFront = true;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget _transitionBuilder(Widget child, Animation<double> animation) {
-      final flip = Tween(begin: pi, end: 0).animate(animation);
-      return AnimatedBuilder(
-          animation: flip,
-          builder: (context, widget) {
-            return Transform(
-              transform: Matrix4.rotationY(flip.value.toDouble()),
-              alignment: Alignment.center,
-              child: child,
-            );
-          });
-    }
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isFront = !isFront;
-        });
-      },
-      child: AnimatedSwitcher(
-          transitionBuilder: _transitionBuilder,
-          duration: const Duration(milliseconds: 500),
-          switchInCurve: Curves.bounceInOut,
-          switchOutCurve: Curves.bounceInOut,
-          child: isFront
-              ? const CardItem(
-                  key: ValueKey(true),
-                  color: Colors.blue,
-                  content: "Front",
-                )
-              : const CardItem(
-                  key: ValueKey(false),
-                  color: Colors.green,
-                  content: "Back",
-                )),
-    );
-  }
-}
-
-class CardItem extends StatelessWidget {
-  const CardItem({
-    required this.color,
-    required this.content,
-    super.key,
-  });
-
-  final String content;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: key,
-      width: 200,
-      height: 200,
-      decoration:
-          BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
-      alignment: Alignment.center,
-      child: Text(
-        content,
-        style: const TextStyle(color: Colors.white, fontSize: 24),
-      ),
-    );
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: Center(
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4, // 4 col
+                  crossAxisSpacing: 8.0, // col space
+                  mainAxisSpacing: 8.0, // row space
+                  childAspectRatio: 1.0,
+                ),
+                itemCount: 16, // 总共16个卡片
+                itemBuilder: (context, index) {
+                  return FlipCard();
+                },
+              ),
+            ),
+          ),
+        ));
   }
 }
