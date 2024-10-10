@@ -37,20 +37,31 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
-          child: Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(12)),
-            alignment: Alignment.center,
-            child: const Text(
-              'Front',
-              style: TextStyle(color: Colors.white, fontSize: 24),
-            ),
-          ),
+      body: const Center(
+        child: FlipCard(),
+      ),
+    );
+  }
+}
+
+class FlipCard extends StatelessWidget {
+  const FlipCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+            color: Colors.blue, borderRadius: BorderRadius.circular(12)),
+        alignment: Alignment.center,
+        child: const Text(
+          'Front',
+          style: TextStyle(color: Colors.white, fontSize: 24),
         ),
       ),
     );
