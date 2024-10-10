@@ -1,57 +1,37 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
-class FlipCard extends StatefulWidget {
+class FlipCard extends StatelessWidget {
   final String str;
+  final bool isFlipped;
+  final VoidCallback onTap;
+
   const FlipCard({
     required this.str,
+    required this.isFlipped,
+    required this.onTap,
     super.key,
   });
 
   @override
-  State<FlipCard> createState() => _FlipCardState();
-}
-
-class _FlipCardState extends State<FlipCard> {
-  bool isFront = true;
-
-  @override
   Widget build(BuildContext context) {
-    Widget _transitionBuilder(Widget child, Animation<double> animation) {
-      final flip = Tween(begin: pi, end: 0).animate(animation);
-      return AnimatedBuilder(
-          animation: flip,
-          builder: (context, widget) {
-            return Transform(
-              transform: Matrix4.rotationY(flip.value.toDouble()),
-              alignment: Alignment.center,
-              child: child,
-            );
-          });
-    }
-
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isFront = !isFront;
-        });
-      },
+      onTap: onTap,
       child: AnimatedSwitcher(
-          transitionBuilder: _transitionBuilder,
-          duration: const Duration(milliseconds: 500),
-          switchInCurve: Curves.bounceInOut,
-          switchOutCurve: Curves.bounceInOut,
-          child: isFront
-              ? const CardItem(
-                  key: ValueKey(true),
-                  color: Colors.blue,
-                  content: "Front",
-                )
-              : CardItem(
-                  key: const ValueKey(false),
-                  color: Colors.green,
-                  content: widget.str,
-                )),
+        duration: const Duration(milliseconds: 500),
+        switchInCurve: Curves.bounceInOut,
+        switchOutCurve: Curves.bounceInOut,
+        child: isFlipped
+            ? CardItem(
+                key: ValueKey(str),
+                color: Colors.green,
+                content: str,
+              )
+            : const CardItem(
+                key: ValueKey("back"),
+                color: Colors.blue,
+                content: "Back",
+              ),
+      ),
     );
   }
 }

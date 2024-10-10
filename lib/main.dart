@@ -1,9 +1,15 @@
-import 'package:card_matching_game/my_card.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:provider/provider.dart';
+import 'game_state.dart';
+import 'my_card.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => GameState(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,61 +28,98 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late List<String> numList;
-  @override
-  void initState() {
-    super.initState();
-    numList = generateList();
-  }
-
-  List<String> generateList() {
-    List<String> numbers = [];
-    for (int i = 1; i <= 8; i++) {
-      numbers.add(i.toString());
-      numbers.add(i.toString());
-    }
-    numbers.shuffle(Random());
-    return numbers;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final gameState = Provider.of<GameState>(context);
+
+    // show dialog when win the game
+    if (gameState.gameOver) {
+      Future.microtask(() => _showVictoryDialog(context, gameState));
+    }
+
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4, // 4 col
-                  crossAxisSpacing: 8.0, // col space
-                  mainAxisSpacing: 8.0, // row space
-                  childAspectRatio: 1.0,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: gameState.resetGame,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Time: ${gameState.timeElapsed}s',
+                    style: const TextStyle(fontSize: 18)),
+                Text('Score: ${gameState.score}',
+                    style: const TextStyle(fontSize: 18)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 1.0,
+                    ),
+                    itemCount: 16,
+                    itemBuilder: (context, index) {
+                      return FlipCard(
+                        str: gameState.numList[index],
+                        isFlipped: gameState.flipped[index] ||
+                            gameState.matched[index],
+                        onTap: () => gameState.flipCard(index),
+                      );
+                    },
+                  ),
                 ),
-                itemCount: 16,
-                itemBuilder: (context, index) {
-                  return FlipCard(
-                    str: numList[index],
-                  );
-                },
               ),
             ),
           ),
-        ));
+        ],
+      ),
+    );
+  }
+
+  void _showVictoryDialog(BuildContext context, GameState gameState) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Victory!'),
+          content: Text(
+              'You completed the game in ${gameState.timeElapsed} seconds with a score of ${gameState.score}.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                gameState.resetGame();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Restart'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
