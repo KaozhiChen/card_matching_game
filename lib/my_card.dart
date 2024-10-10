@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class FlipCard extends StatefulWidget {
+  final String str;
   const FlipCard({
+    required this.str,
     super.key,
   });
 
@@ -45,10 +47,10 @@ class _FlipCardState extends State<FlipCard> {
                   color: Colors.blue,
                   content: "Front",
                 )
-              : const CardItem(
-                  key: ValueKey(false),
+              : CardItem(
+                  key: const ValueKey(false),
                   color: Colors.green,
-                  content: "Back",
+                  content: widget.str,
                 )),
     );
   }
@@ -68,8 +70,6 @@ class CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       key: key,
-      width: 200,
-      height: 200,
       decoration:
           BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
       alignment: Alignment.center,

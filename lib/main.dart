@@ -1,5 +1,6 @@
-import 'package:card_matching_game/MyCard.dart';
+import 'package:card_matching_game/my_card.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late List<String> numList;
+  @override
+  void initState() {
+    super.initState();
+    numList = generateList();
+  }
+
+  List<String> generateList() {
+    List<String> numbers = [];
+    for (int i = 1; i <= 8; i++) {
+      numbers.add(i.toString());
+      numbers.add(i.toString());
+    }
+    numbers.shuffle(Random());
+    return numbers;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisSpacing: 8.0, // row space
                   childAspectRatio: 1.0,
                 ),
-                itemCount: 16, // 总共16个卡片
+                itemCount: 16,
                 itemBuilder: (context, index) {
-                  return FlipCard();
+                  return FlipCard(
+                    str: numList[index],
+                  );
                 },
               ),
             ),
