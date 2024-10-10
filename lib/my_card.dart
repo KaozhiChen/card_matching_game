@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
-class FlipCard extends StatelessWidget {
+class FlipCard extends StatefulWidget {
   final String str;
   final bool isFlipped;
   final VoidCallback onTap;
@@ -13,24 +14,81 @@ class FlipCard extends StatelessWidget {
   });
 
   @override
+  State<FlipCard> createState() => _FlipCardState();
+}
+
+class _FlipCardState extends State<FlipCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _flipAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _flipAnimation = Tween<double>(begin: 0, end: pi).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutBack),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant FlipCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isFlipped != oldWidget.isFlipped) {
+      if (widget.isFlipped) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 500),
-        switchInCurve: Curves.bounceInOut,
-        switchOutCurve: Curves.bounceInOut,
-        child: isFlipped
-            ? CardItem(
-                key: ValueKey(str),
-                color: Colors.green,
-                content: str,
-              )
-            : const CardItem(
-                key: ValueKey("back"),
-                color: Colors.blue,
-                content: "Back",
-              ),
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final isFront = _flipAnimation.value < pi / 2;
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..rotateY(_flipAnimation.value)
+              ..scale(_scaleAnimation.value),
+            child: isFront
+                ? const CardItem(
+                    key: ValueKey("back"),
+                    color: Colors.blue,
+                    content: "Back",
+                  )
+                : Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(pi),
+                    child: CardItem(
+                      key: ValueKey(widget.str),
+                      color: Colors.green,
+                      content: widget.str,
+                    ),
+                  ),
+          );
+        },
       ),
     );
   }
