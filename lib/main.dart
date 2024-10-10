@@ -44,25 +44,62 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class FlipCard extends StatelessWidget {
+class FlipCard extends StatefulWidget {
   const FlipCard({
     super.key,
   });
 
   @override
+  State<FlipCard> createState() => _FlipCardState();
+}
+
+class _FlipCardState extends State<FlipCard> {
+  bool isFront = true;
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-            color: Colors.blue, borderRadius: BorderRadius.circular(12)),
-        alignment: Alignment.center,
-        child: const Text(
-          'Front',
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        ),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isFront = !isFront;
+        });
+      },
+      child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          child: isFront
+              ? const CardItem(
+                  color: Colors.blue,
+                  content: "Front",
+                )
+              : const CardItem(
+                  color: Colors.green,
+                  content: "Back",
+                )),
+    );
+  }
+}
+
+class CardItem extends StatelessWidget {
+  const CardItem({
+    required this.color,
+    required this.content,
+    super.key,
+  });
+
+  final String content;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 200,
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
+      alignment: Alignment.center,
+      child: Text(
+        content,
+        style: const TextStyle(color: Colors.white, fontSize: 24),
       ),
     );
   }
