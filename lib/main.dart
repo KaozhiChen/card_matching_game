@@ -46,6 +46,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -60,10 +61,31 @@ class MyHomePage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Time: ${gameState.timeElapsed}s',
-                    style: const TextStyle(fontSize: 18)),
-                Text('Score: ${gameState.score}',
-                    style: const TextStyle(fontSize: 18)),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.blue,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Time: ${gameState.timeElapsed}s',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        )),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.blue),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Score: ${gameState.score}',
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white)),
+                  ),
+                ),
               ],
             ),
           ),

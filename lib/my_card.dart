@@ -76,7 +76,7 @@ class _FlipCardState extends State<FlipCard>
                 ? const CardItem(
                     key: ValueKey("back"),
                     color: Colors.blue,
-                    content: "Back",
+                    content: "card",
                   )
                 : Transform(
                     alignment: Alignment.center,
